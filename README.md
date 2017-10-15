@@ -18,9 +18,29 @@
  
 http://space.jpl.nasa.gov/cgi-bin/wspace?tbody=1000&vbody=1001&month=10&day=15&year=2017&hour=22&minute=11&fovmul=7&rfov=2&bfov=30&porbs=1&brite=1
 
-
-
 https://earthquake.usgs.gov/monitoring/operations/heliplot.php?virtual_network=GSN
 
+http://www.hamqsl.com/solar.html ---:
 
+<center>
+<a href="http://www.hamqsl.com/solar.html" title="Click to add Solar-Terrestrial Data to your website!"><img src="http://www.hamqsl.com/solarsun.php"></a>
+</center>
+
+<p></p>
+
+<center>
+<a href="http://www.hamqsl.com/solar.html" title="Click to add Solar-Terrestrial Data to your website!"><img src="http://www.hamqsl.com/solarmuf.php"></a>
+</center>
+
+<p></p>
+
+<center>
+<a href="http://www.hamqsl.com/solar.html" title="Click to add Solar-Terrestrial Data to your website!"><img src="http://www.hamqsl.com/solarglobe.php"></a>
+</center>
+
+<p></p>
+
+<center>
+<a href="http://www.hamqsl.com/solar.html" title="Click to add Solar-Terrestrial Data to your website!"><img src="http://www.hamqsl.com/solarsystem.php"></a>
+</center>
 
