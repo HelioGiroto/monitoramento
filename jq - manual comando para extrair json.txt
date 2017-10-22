@@ -1,0 +1,214 @@
+EXEMPLOS DE COMANDOS COM JQ - PARA EXTRAIR INFORMACOES DE ARQUIVOS JSON:
+
+*** Modos de escolher o arquivo a ser PARSEado: ***
+
+		- Linha inteira da URL:
+
+		curl -s https://api.github.com/repos/stedolan/jq/commits?per_page=5 | jq
+
+			(O -s é silence. Omita e veja a diferenca)
+
+		- Variável recebe URL:
+
+		arq=https://api.github.com/repos/stedolan/jq/commits?per_page=5
+		curl -s $arq | jq
+
+		- Variável recebe comando CURL:
+
+		arq=$(curl -s https://api.github.com/repos/stedolan/jq/commits?per_page=5)
+		$arq | jq
+
+		- Baixa arquivo e PARSEa o arquivo JSON:
+
+		wget https://api.github.com/repos/stedolan/jq/commits?per_page=5 [> arq.json]
+		cat arq.json | jq
+
+		ou simplesmente
+
+		jq '.' arq.json
+
+
+*** COMO USAR O JQ: ***
+
+1. Para ver todos os registros:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[]' - Tudo
+
+ou mesmo:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.' 
+
+ou:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq 
+
+
+2. Para ver o primeiro registro:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[0]' - Neste caso só o cabecalho
+
+
+3. Para ver um registro específico:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[n]'  - n é o numero do reg.
+
+
+4. Para ver alguns registros específicos:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[0,1,3,7]'
+
+
+5. Para extrair o último registro do arquivo JSON:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[-1]'
+
+ou:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq length
+
+Suponha que o resultado disso seja: 64
+
+entao...:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[63]' 
+
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[63][1]' 
+
+
+6. Para saber o tipo de arquivo que é esse JSON:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq type
+
+
+7. Como extrair apenas os campos 1 e 2 de certo registro:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[n][0,1]' - n é o número de certo registro.
+
+ou:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[n] | .[0,1]' - n é o número de certo registro.
+
+
+8. Para imprimir apenas certos campos de TODOS os registros do arquivo JSON:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[][0]'
+
+ou (+ complicado):
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[] | .[0]'
+
+
+Mas, para imprimir os campos 1 e 2 de todos os registros:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[] | .[0,1]'
+
+ou:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[] | .[0], .[1]'
+
+
+9. Para imprimir apenas os campos com certo nome (KEY) de TODOS os registros do arq. JSON:
+
+curl -s 'http://exemplo.net.json' | jq '.[] | .name'
+
+(Aqui acima se poe um ponto e o nome da Key (.name) em vez de [][] - qdo é só para números (arrays sem keys)
+
+
+10. Imprimir apenas o registro cujo nome é Helio:
+
+cat file.json | jq '.[] | select(.name=="Helio")'
+
+
+9. Como tirar as áspas do valor extraido do JSON:
+
+curl -s 'http://services.swpc.noaa.gov/products/noaa-planetary-k-index.json' | jq '.[5][1]' | sed 's/"//g'
+
+
+10. Extrair varios registros (um rango):
+
+curl -s 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2017-09-06&minmagnitude=5' | jq '.features[0:10]' - Ultimos 10 sismos
+
+
+
+11. IMPRIME SOMENTE ALGUM(S) CAMPO(S) especifico DOS REGISTROS CUJO CAMPO É IGUAL A certo valor :
+
+	cat sentry.api.json | jq '.data[] | select(.ts_max=="0") | .fullname'
+	curl -s 'https://ssd-api.jpl.nasa.gov/sentry.api' | jq '.data[] | select(.ts_max=="0") | .fullname'
+
+	E COM REGEX ????
+		curl -s 'https://ssd-api.jpl.nasa.gov/sentry.api' | jq '.data[] | select(.range | contains("2017")) | .fullname'
+
+	REGEX e IMPRIME DOIS CAMPOS: 
+		cat sentry.api.json | jq '.data[] | select(.range | contains("2017")) | .ip, .fullname'
+
+	REGEX e IMPRIME CONCATENANDO DOIS CAMPOS:
+		cat sentry.api.json | jq '.data[] | select(.range | contains("2017")) | .ip + " = " + .fullname'
+
+	*CABEÇALHO ACIMA DOS JSON: VER https://cneos.jpl.nasa.gov/sentry/
+ 	*DOCUMENTACAO - https://ssd-api.jpl.nasa.gov/doc/sentry.html
+
+
+n - é o registro no caso de um json com varios registros.
+
+Todos com nome: jq '.nome[]'
+Algum com nome: jq '.nome[n]'
+Varios c. nome: jq '.nome[1,2,3]'
+Rango com nome: jq '.nome[0:12]'
+Sub.json -nome: jq '.nome[n].nascimento.ano'
+
+
+Todos sem nome: jq '.[]'
+Algum sem nome: jp '.[n]'
+Varios s. nome: jq '.[1,2,3]'
+Rango sem nome: jq '.[0:12]'
+Sub.json -nome: jq '.[n][n][n]'
+
+Certo campo de todos os registros do JSON:
+jq '.[].preço'
+e com nome:
+jq '.vendas[].preço'
+
+
+
+livro:
+como cultivar um super cerebro
+
+
+
+ 
+
+
+READS (INPUTS):
+
+Qtos últimos sismos?:
+De qto magnitude?:
+
+
+curl -s 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=5' | jq '.features[0].properties.place'
+
+além de .place tb:
+
+mag
+time
+place
+tsunami
+url
+
+COMANDOS PARA EXTRAIR A HORA:
+hora=$(curl -s 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=5' | jq '.features[0].properties.time')
+
+HORA=$((hora/1000))
+
+date -d @$HORA
+
+
+
+
+
+
+
+
+
+
+
